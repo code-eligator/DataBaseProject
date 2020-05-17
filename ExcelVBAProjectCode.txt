@@ -1,0 +1,55 @@
+Option Explicit
+Public dbconn As ADODB.Connection
+
+Public Sub Test()
+
+    Dim RS As ADODB.Recordset
+    Dim sql As String
+    Dim i As Integer
+    
+    mySqlCon
+    Set RS = New ADODB.Recordset
+   
+    sql = "SELECT TRUNC(AVG(CREDIT_LIMIT)) FROM customer WHERE trunc((to_char(sysdate, 'rrrr') - to_char(BIRTH_DT, 'rrrr') + 1)/10) = 2 Union ALL SELECT TRUNC(AVG(CREDIT_LIMIT)) FROM customer WHERE trunc((to_char(sysdate, 'rrrr') - to_char(BIRTH_DT, 'rrrr') + 1)/10) = 3 Union ALL SELECT TRUNC(AVG(CREDIT_LIMIT)) FROM customer WHERE trunc((to_char(sysdate, 'rrrr') - to_char(BIRTH_DT, 'rrrr') + 1)/10) = 4 Union ALL SELECT TRUNC(AVG(CREDIT_LIMIT)) FROM customer WHERE trunc((to_char(sysdate, 'rrrr') - to_char(BIRTH_DT, 'rrrr') + 1)/10) = 5 Union ALL SELECT TRUNC(AVG(CREDIT_LIMIT)) FROM customer WHERE trunc((to_char(sysdate, 'rrrr') - to_char(BIRTH_DT, 'rrrr') + 1)/10) = 6"
+    RS.Open sql, dbconn
+   
+    If RS.EOF Then
+        MsgBox "조회조건에 해당하는 자료가 없습니다."
+    Else
+     
+        For i = 0 To RS.Fields.Count - 1
+          Cells(1, i + 1).Value = RS.Fields(i).Name
+        Next
+     
+        RS.MoveFirst
+         
+        With ActiveSheet
+           .Range("B2").CopyFromRecordset RS
+        End With
+         
+    End If
+ 
+
+    RS.Close
+    dbconn.Close
+    
+    ActiveSheet.Shapes.AddChart.Select '
+    
+    With ActiveChart
+        .SetSourceData Source:=Worksheets(1).Range("A2:B6") '
+        
+    End With
+    
+End Sub
+
+
+Public Sub mySqlCon()
+
+    Dim strCon  As String '연결String
+    strCon = "DSN=Oracle_ODBC_19_6;UID=scott;PWD=tiger;"
+   
+    Set dbconn = New ADODB.Connection
+   
+    dbconn.Open strCon      '연결
+
+End Sub
