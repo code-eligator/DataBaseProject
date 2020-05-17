@@ -1,0 +1,10 @@
+> library(rJava)
+> #Sys.setenv(JAVA_HOME='C:\\Program Files\\Java\\jre1.8.0_251')
+> library(DBI)
+> library(RJDBC)
+> drv<-JDBC("oracle.jdbc.driver.OracleDriver", "C:\\Oracle\\instantclient_19_6\\ojdbc8.jar")
+> conn<-dbConnect(drv, "jdbc:oracle:thin:@//192")
+> conn<-dbConnect(drv, "jdbc:oracle:thin:@//192.168.119.119:1521/dink", "scott", "tiger")
+> rst<-dbGetQuery(conn, "select trunc(avg(CREDIT_LIMIT)) from customer where trunc((to_char(sysdate, 'rrrr') - to_char(BIRTH_DT, 'rrrr') + 1)/10) = 2 UNION ALL select trunc(avg(CREDIT_LIMIT)) from customer where trunc((to_char(sysdate, 'rrrr') - to_char(BIRTH_DT, 'rrrr') + 1)/10) = 3 UNION ALL select trunc(avg(CREDIT_LIMIT)) from customer where trunc((to_char(sysdate, 'rrrr') - to_char(BIRTH_DT, 'rrrr') + 1)/10) = 4 UNION ALL select trunc(avg(CREDIT_LIMIT)) from customer where trunc((to_char(sysdate, 'rrrr') - to_char(BIRTH_DT, 'rrrr') + 1)/10) = 5 UNION ALL select trunc(avg(CREDIT_LIMIT)) from customer where trunc((to_char(sysdate, 'rrrr') - to_char(BIRTH_DT, 'rrrr') + 1)/10) = 6")
+> vector<-rst[[1]]
+> barplot(vector, main = "Average limit by age group", xlab = "Ages", ylab = "limit")
